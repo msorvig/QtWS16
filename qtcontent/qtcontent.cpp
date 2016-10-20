@@ -49,6 +49,11 @@ RasterWindow::RasterWindow()
 
 }
 
+RasterWindow::~RasterWindow()
+{
+
+}
+
 void RasterWindow::setDragEnabled(bool enable)
 {
     m_enableDrag = enable;
@@ -67,12 +72,13 @@ void RasterWindow::setOpaqueFormat(bool enable)
 void RasterWindow::setDrawAlpha(int alpha)
 {
     m_drawAlpha = alpha;
+    m_color.setAlpha(m_drawAlpha);
 }
 
 void RasterWindow::setColor(QColor color)
 {
     m_color = color;
-    m_color.setAlpha(m_drawAlpha); // surprise! override aplha (sorry)
+    m_color.setAlpha(m_drawAlpha);
 }
 
 void RasterWindow::paintEvent(QPaintEvent * event)
@@ -95,7 +101,7 @@ void RasterWindow::paintEvent(QPaintEvent * event)
 
     QRect g = geometry();
     QString text;
-    text += QString("Geometry: %1 %2 %3 %4\n").arg(g.x()).arg(g.y()).arg(g.width()).arg(g.height());
+    text += QString("Size: %1 %2 \n").arg(g.width()).arg(g.height());
 
     QPen pen;
     pen.setColor(QColor(255, 255, 255, 200));
@@ -121,4 +127,16 @@ void RasterWindow::mousePressEvent(QMouseEvent *)
 void RasterWindow::mouseReleaseEvent(QMouseEvent *)
 {
     m_pressed = false;
+}
+
+void PopoverCheckeredWindow::mousePressEvent(QMouseEvent *)
+{
+    // TODO: Investigate why we seem to get mouse press on
+    // mouse enter for the popover window.
+    //emit closePopup();
+}
+
+void PopoverCheckeredWindow::mouseReleaseEvent(QMouseEvent *)
+{
+    emit closePopup();
 }

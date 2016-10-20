@@ -6,8 +6,8 @@ int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    // Create and configure native window
-    NSRect frame = NSMakeRect(40, 40, 320, 200);
+    // Create and configure the native window
+    NSRect frame = NSMakeRect(200, 200, 320, 200);
     NSWindow *window =
         [[NSWindow alloc] initWithContentRect:frame
                                     styleMask:NSTitledWindowMask | NSClosableWindowMask |
@@ -16,21 +16,19 @@ int main(int argc, char **argv)
                                       backing:NSBackingStoreBuffered
                                         defer:NO];
 
-    window.title = @"NSFullSizeContentViewWindowMask";
+    // Hide the title bar
     window.titlebarAppearsTransparent = YES;
     window.movableByWindowBackground = YES;
 
-    // Create and configure Qt content window
-    RasterWindow *rasterWindow = new RasterWindow();
-    rasterWindow->setDragEnabled(false);  // "drag" feature in sample RasterWindow conflicts
-                                          // with movableByWindowBackground.
+    // Set Qt content for the native window
+    QWindow *checkeredWindow = new CheckeredWindow();
+    window.contentView = checkeredWindow->toNSView();
 
-    // Make the native window contain Qt content
-    window.contentView = rasterWindow->toNSView();
-
-    // Show native window
+    // Show the native window
     [window makeKeyAndOrderFront:nil];
-    [window makeFirstResponder:window.contentView];
 
-    return app.exec();
+    // Run application; clean up on exit
+    int ret = app.exec();
+    [window release];
+    return ret;
 }

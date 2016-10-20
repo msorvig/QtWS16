@@ -45,25 +45,64 @@
 
 class RasterWindow : public QRasterWindow
 {
+Q_OBJECT
 public:
     RasterWindow();
+    ~RasterWindow();
     
     void setDragEnabled(bool enable);
     void setOpaqueFormat(bool enable);
     void setDrawAlpha(int alpha);
     void setColor(QColor color);
 
-    virtual void paintEvent(QPaintEvent * event);
-    virtual void mouseMoveEvent(QMouseEvent * ev);
-    virtual void mousePressEvent(QMouseEvent * ev);
-    virtual void mouseReleaseEvent(QMouseEvent * ev);
+    void paintEvent(QPaintEvent * event);
+    void mouseMoveEvent(QMouseEvent * ev);
+    void mousePressEvent(QMouseEvent * ev);
+    void mouseReleaseEvent(QMouseEvent * ev);
 private:
     bool m_enableDrag;
     int m_drawAlpha;
     bool m_pressed;
+    bool m_emitCloseOnClick;
+
     QPoint m_offset;
     QPoint m_lastPos;
     QColor m_color;
 };
+
+// Convenience classes for the sake of uncluttering the sample code
+class CheckeredWindow : public RasterWindow
+{
+public:
+    CheckeredWindow() {
+        setDragEnabled(false);
+    }
+};
+
+class DraggableCheckeredWindow : public RasterWindow
+{
+public:
+
+};
+
+class HUDCheckeredWindow : public RasterWindow
+{
+public:
+    HUDCheckeredWindow() {
+        setDrawAlpha(50);
+        setDragEnabled(false);
+    }
+};
+
+class PopoverCheckeredWindow : public CheckeredWindow
+{
+Q_OBJECT
+public:
+    void mousePressEvent(QMouseEvent * ev);
+    void mouseReleaseEvent(QMouseEvent * ev);
+Q_SIGNALS:
+    void closePopup();
+};
+
 
 #endif // RASTERWINDOW_H

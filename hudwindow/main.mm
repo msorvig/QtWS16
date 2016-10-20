@@ -6,7 +6,7 @@ int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
 
-    // Create and configure native window
+    // Create and configure the native window
     NSRect frame = NSMakeRect(40, 40, 320, 200);
     NSWindow *window =
         [[NSPanel alloc] initWithContentRect:frame
@@ -15,20 +15,18 @@ int main(int argc, char **argv)
                                              NSHUDWindowMask | NSUtilityWindowMask
                                      backing:NSBackingStoreBuffered
                                        defer:NO];
-    window.title = @"NSHUDWindowMask";
-    window.movableByWindowBackground = NO;
+    window.title = @"HUD Window";
 
-    // Create and configure Qt content window
-    RasterWindow *rasterWindow = new RasterWindow();
-    rasterWindow->setDrawAlpha(85); // Make HUD content transparent
+    // Set Qt content for the native window
+    QWindow *checkeredWindow = new HUDCheckeredWindow();
+    window.contentView = checkeredWindow->toNSView();
 
-    // Make the native window contain Qt content
-    window.contentView = rasterWindow->toNSView();
-
-    // Show native window
+    // Show the native window
     [window makeKeyAndOrderFront:nil];
-    [window makeFirstResponder:window.contentView];
     
-    return app.exec();
+    // Run application; clean up on exit
+    int ret = app.exec();
+    [window release];
+    return ret;
 }
 

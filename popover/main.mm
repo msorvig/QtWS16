@@ -26,14 +26,20 @@ class ClickWindow : public QWindow
 public:
     ClickWindow()
     {
+        // Create Qt window
+        PopoverCheckeredWindow *window = new PopoverCheckeredWindow();
+
         // Create popover
         m_popover = [[NSPopover alloc] init];
         [m_popover setContentSize:NSMakeSize(200.0, 200.0)];
         [m_popover setBehavior:NSPopoverBehaviorTransient];
         [m_popover setAnimates:YES];
 
-        // Create view and view controller
-        RasterWindow *window = new RasterWindow();
+        // Close popover on QWindow hide
+        connect(window, &PopoverCheckeredWindow::closePopup, [=]() {
+            [m_popover close];
+        });
+
         ProgramaticViewController *viewController = 
             [[ProgramaticViewController alloc] initWithView:window->toNSView()];
         [m_popover setContentViewController:viewController];
@@ -47,9 +53,11 @@ public:
 
     void mousePressEvent(QMouseEvent *ev)
     {
-        // Show popover at mouse position; re-using the previosly created view
+        // Close currently open popover (if any)
+        [m_popover close];
+        
+        // Show popover on the ClickWindow window at mouse position;
         NSView *windowView = reinterpret_cast<NSView *>(winId());
-        // NSRect position = QRectF(ev->localPos(), QSize(1,1)).toCGRect();
         NSRect position = CGRectMake(ev->localPos().x(), ev->localPos().y(), 1, 1);
         [m_popover showRelativeToRect:position
                                ofView:windowView
@@ -65,6 +73,7 @@ int main(int argc, char **argv)
     QGuiApplication app(argc, argv);
 
     ClickWindow window;
+    window.resize(400, 400);
     window.show();
 
     return app.exec();
