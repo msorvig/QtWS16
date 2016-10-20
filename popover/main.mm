@@ -20,6 +20,14 @@
 
 @end
 
+ProgramaticViewController *createViewController(NSView *view)
+{
+    ProgramaticViewController *viewController =
+        [[ProgramaticViewController alloc] initWithView:view];
+    [viewController autorelease];
+    return viewController;
+}
+
 // A Simple QQWindow subclass that shows a popover on mouse release
 class ClickWindow : public QWindow
 {
@@ -31,19 +39,18 @@ public:
 
         // Create popover
         m_popover = [[NSPopover alloc] init];
-        [m_popover setContentSize:NSMakeSize(200.0, 200.0)];
+        [m_popover setContentSize:NSMakeSize(200, 200)];
         [m_popover setBehavior:NSPopoverBehaviorTransient];
         [m_popover setAnimates:YES];
 
-        // Close popover on QWindow hide
+        // Close popover on PopoverCheckeredWindow signal
         connect(window, &PopoverCheckeredWindow::closePopup, [=]() {
             [m_popover close];
         });
 
-        ProgramaticViewController *viewController = 
-            [[ProgramaticViewController alloc] initWithView:window->toNSView()];
-        [m_popover setContentViewController:viewController];
-        [viewController release];
+        // Assign the Qt window to the popoper via view controller
+        NSView *popoverView = window->toNSView();
+        [m_popover setContentViewController:createViewController(popoverView)];
     }
 
     ~ClickWindow()
@@ -57,10 +64,10 @@ public:
         [m_popover close];
         
         // Show popover on the ClickWindow window at mouse position;
-        NSView *windowView = reinterpret_cast<NSView *>(winId());
+        NSView *thisView = reinterpret_cast<NSView *>(winId());
         NSRect position = CGRectMake(ev->localPos().x(), ev->localPos().y(), 1, 1);
         [m_popover showRelativeToRect:position
-                               ofView:windowView
+                               ofView:thisView
                         preferredEdge:NSMaxYEdge];
     }
     

@@ -26,6 +26,14 @@
 }
 @end
 
+ProgramaticViewController *createViewController(NSView *view)
+{
+    ProgramaticViewController *viewController =
+        [[ProgramaticViewController alloc] initWithView:view];
+    [viewController autorelease];
+    return viewController;
+}
+
 int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
@@ -51,8 +59,8 @@ int main(int argc, char **argv)
 
         NSView *view = checkeredWindow->toNSView();
         view.frame = NSMakeRect(0,0, 200, 1);
-        ProgramaticViewController *viewController = [[ProgramaticViewController alloc] initWithView:view];
-        viewController.layoutAttribute =  NSLayoutAttributeLeft;
+        ProgramaticViewController *viewController = createViewController(view);
+        viewController.layoutAttribute = NSLayoutAttributeLeft;
         [window addTitlebarAccessoryViewController:viewController];
     }
 
@@ -64,8 +72,8 @@ int main(int argc, char **argv)
 
         NSView *view = checkeredWindow->toNSView();
         view.frame = NSMakeRect(0,0, 200, 1);
-        ProgramaticViewController *viewController = [[ProgramaticViewController alloc] initWithView:view];
-        viewController.layoutAttribute =  NSLayoutAttributeRight;
+        ProgramaticViewController *viewController = createViewController(view);
+        viewController.layoutAttribute = NSLayoutAttributeRight;
         [window addTitlebarAccessoryViewController:viewController];
     }
 
